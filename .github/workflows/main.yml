@@ -1,4 +1,4 @@
-name: test
+name: Create PDFs and update README
 permissions:
   contents: write
 
@@ -27,33 +27,40 @@ jobs:
         run: |
           python scripts/generate_pdfs.py
 
-      - name: Generate links safely (folders with spaces supported)
+      - name: Generate links list
         run: |
           echo "" > links.md
-          
-          # find + print0 safely handles spaces
-          find . -maxdepth 1 -type d ! -name "." -print0 | \
-          sort -z | \
-          while IFS= read -r -d '' f; do
+          folders=$(find . -maxdepth 1 -type d ! -name "." | sort)
+          for f in $folders; do
             fname=$(basename "$f")
             pdf="$f/lecture_${fname}.pdf"
             if [ -f "$pdf" ]; then
-              echo "- [$fname]($(printf "./%s/lecture_%s.pdf" "$fname" "$fname"))" >> links.md
+              echo "- [${fname}](./${fname}/lecture_${fname}.pdf)" >> links.md
             fi
           done
 
-          # store result into environment variable
-          LINKS=$(cat links.md)
+          # передаём содержимое файла в переменную окружения
+          LINKS="$(cat links.md)"
           LINKS="${LINKS//$'\n'/\\n}"
-          echo "PDF_LINKS=$LINKS" >> "$GITHUB_ENV"
+          echo "PDF_LINKS=$LINKS" >> $GITHUB_ENV
 
-      - name: Update README cleanly
+      - name: Update README
         run: |
-          # Insert links between START and END markers
-          sed -i "/<!--START_LECTURES-->/,/<!--END_LECTURES-->/c\
-<!--START_LECTURES-->\
-${PDF_LINKS}\
-<!--END_LECTURES-->" README.md
+          awk -v links="$PDF_LINKS" '
+            /<!--START_LECTURES-->/ {
+              print
+              print links
+              next
+            }
+            /<!--END_LECTURES-->/ {
+              print
+              next
+            }
+            !done
+            {print}
+          ' README.md > tmp.md
+
+          mv tmp.md README.md
 
       - name: Commit & push
         run: |
