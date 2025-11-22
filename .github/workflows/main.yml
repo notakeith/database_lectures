@@ -37,10 +37,10 @@ jobs:
           | sort -z \
           | while IFS= read -r -d '' f; do
               fname=$(basename "$f")
-              pdf="$f/lecture_${fname}.pdf"
+              pdf="$f/${fname}.pdf"
               if [ -f "$pdf" ]; then
-                # ссылка вида ./lecture 1/lecture_lecture 1.pdf
-                printf -- "- [%s](./%s/lecture_%s.pdf)\n" "$fname" "$fname" "$fname" >> links.md
+                # ссылка вида ./lecture 1/lecture 1.pdf
+                printf -- "- [%s](./%s/%s.pdf)\n" "$fname" "$fname" "$fname" >> links.md
               fi
             done
 
