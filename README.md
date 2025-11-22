@@ -16,7 +16,6 @@
 - [lecture_08](./lecture_08/lecture_08.pdf)
 - [lecture_09](./lecture_09/lecture_09.pdf)
   - [Конспект](./lecture_09/README.md)
-- [lecture_1](./lecture_1/lecture_1.pdf)
 - [lecture_10](./lecture_10/lecture_10.pdf)
   - [Конспект](./lecture_10/README.md)
 - [lecture_11](./lecture_11/lecture_11.pdf)
